@@ -6,5 +6,5 @@ RSpec::Core::RakeTask.new(:spec)
 task default: :spec
 
 task :compile do
-  sh 'cd rust && cargo build --release'
+  sh "cd #{File.dirname(__FILE__)}/rust && cargo build --release"
 end
