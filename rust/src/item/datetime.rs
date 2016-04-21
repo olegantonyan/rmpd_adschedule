@@ -1,4 +1,4 @@
-extern crate time;
+use time;
 
 pub fn time_string_to_secs_since_midnight(s: &str) -> u32 {
     match time::strptime(s, "%H:%M:%S") {

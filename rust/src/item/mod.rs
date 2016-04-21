@@ -23,11 +23,6 @@ impl Item {
         }
     }
 
-    /*pub fn new_from_json(json: &str) -> Item {
-        let d: ItemRaw = json::decode(&json).unwrap();
-        Item::new(d.id, &d.begin_date, &d.end_date, &d.begin_time, &d.end_time, d.playbacks_count)
-    }*/
-
     pub fn new_vec_from_json(json: &str) -> Vec<Item> {
         let da: Vec<ItemRaw> = json::decode(&json).unwrap();
         let mut res: Vec<Item> = Vec::new();
@@ -36,6 +31,21 @@ impl Item {
         }
         res
     }
+}
+
+pub fn vec_to_json() -> String {
+    let mut v = Vec::new();
+    v.push(
+        ItemRaw {
+            id: 1,
+            begin_date: "12.12.1012".to_string(),
+            end_date: "12.12.1012".to_string(),
+            begin_time: "12.12.1012".to_string(),
+            end_time: "12.12.1012".to_string(),
+            playbacks_count: 2
+        }
+    );
+    json::encode(&v).unwrap()
 }
 
 #[derive(RustcDecodable, RustcEncodable)]

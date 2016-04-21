@@ -1,5 +1,6 @@
 extern crate libc;
 extern crate rustc_serialize;
+extern crate time;
 
 use std::ffi::{CStr,CString};
 
@@ -12,7 +13,8 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
     let it = item::Item::new_vec_from_json(&ruby_string);
     println!("item begin_time: {}", it[0].begin_time);
 
-    c_ptr_from_string("from rust with love")
+    let r = item::vec_to_json();
+    c_ptr_from_string(&r)
 }
 
 fn string_from_c_ptr(c_ptr: *const libc::c_char) -> String {
