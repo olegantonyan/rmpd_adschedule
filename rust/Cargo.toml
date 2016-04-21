@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Oleg Antonyan <oleg.b.antonyan@gmail.com>"]
 
 [dependencies]
+time = "*"
+libc = "*"
+rustc-serialize = "*"
 
 [lib]
 crate-type = ["dylib"]

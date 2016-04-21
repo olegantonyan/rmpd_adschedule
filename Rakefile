@@ -8,3 +8,8 @@ task default: :spec
 task :compile do
   sh "cd #{File.dirname(__FILE__)}/rust && cargo build --release"
 end
+
+task :run do
+  require 'rmpd_adschedule'
+  RmpdAdschedule.say_hello
+end
