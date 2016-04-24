@@ -11,9 +11,9 @@ module RmpdAdschedule
       JSON.parse(result)
     end
 
-    def self.calculate!(input_data)
-      raise TypeError, "wrong argument type #{object.class} (expected String)" unless input_data.is_a? String
-      ptr = @ffi_calculate.call(input_data)
+    def self.calculate!(jsondata)
+      raise TypeError, "wrong argument type #{object.class} (expected String)" unless jsondata.is_a? String
+      ptr = @ffi_calculate.call(jsondata)
       result = ptr.to_s
       LibC.free(ptr)
       result
