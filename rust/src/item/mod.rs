@@ -15,8 +15,8 @@ impl Item {
     pub fn new(id: u32, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: u16) -> Item {
         Item {
             id: id,
-            begin_date: datetime::date_string_to_days_since_epoch(begin_date),
-            end_date: datetime::date_string_to_days_since_epoch(end_date),
+            begin_date: datetime::date_string_to_secs_since_epoch(begin_date),
+            end_date: datetime::date_string_to_secs_since_epoch(end_date),
             begin_time: datetime::time_string_to_secs_since_midnight(begin_time),
             end_time: datetime::time_string_to_secs_since_midnight(end_time),
             playbacks_count: playbacks_count
@@ -25,10 +25,9 @@ impl Item {
 
     pub fn new_vec_from_json(json: &str) -> Vec<Item> {
         let da: Vec<ItemRaw> = json::decode(&json).unwrap();
-        let mut res: Vec<Item> = Vec::new();
-        for d in da.iter() {
-            res.push(Item::new(d.id, &d.begin_date, &d.end_date, &d.begin_time, &d.end_time, d.playbacks_count));
-        }
+        let res: Vec<Item> = da.iter().map(|d|
+            Item::new(d.id, &d.begin_date, &d.end_date, &d.begin_time, &d.end_time, d.playbacks_count)
+        ).collect();
         res
     }
 }
