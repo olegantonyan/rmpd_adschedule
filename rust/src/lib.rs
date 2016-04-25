@@ -3,13 +3,15 @@ extern crate rustc_serialize;
 extern crate time;
 
 mod item;
+mod datetime;
+mod date_interval;
 
 #[no_mangle]
 pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_char {
     let ruby_string = string_from_c_ptr(c_ptr);
 
-    let it = item::Item::new_vec_from_json(&ruby_string);
-    println!("item begin_date: {:?}", it[0].begin_date);
+    let items = item::Item::new_vec_from_json(&ruby_string);
+    println!("{:?}", item::date_intervals_sorted(&items));
 
     let r = item::vec_to_json();
     c_ptr_from_string(&r)

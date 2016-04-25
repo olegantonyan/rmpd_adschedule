@@ -1,6 +1,8 @@
 use rustc_serialize::json;
+use std::collections::HashSet;
 
-mod datetime;
+use datetime;
+use date_interval::DateInterval;
 
 pub struct Item {
     pub id: u32,
@@ -45,6 +47,30 @@ pub fn vec_to_json() -> String {
         }
     );
     json::encode(&v).unwrap()
+}
+
+pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
+    let mut set: HashSet<u32> = HashSet::new();
+    for i in items.iter() {
+        set.insert(i.begin_date);
+        set.insert(i.end_date);
+    }
+    let mut vec: Vec<u32> = set.iter().cloned().collect();
+    vec.sort();
+
+    if vec.len() == 1 {
+        let mut res: Vec<DateInterval> = Vec::new();
+        res.push(DateInterval { begin: vec[0], end: vec[0] });
+        return res;
+    }
+
+    let mut res: Vec<DateInterval> = Vec::new();
+    let mut i = 0;
+    while i + 1 < vec.len() {
+        res.push(DateInterval { begin: vec[i], end: vec[i + 1] });
+        i += 1;
+    }
+    res
 }
 
 #[derive(RustcDecodable, RustcEncodable)]

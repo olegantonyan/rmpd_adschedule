@@ -4,8 +4,13 @@ require 'rmpd_adschedule/rust'
 
 module RmpdAdschedule
   def self.say_hello
-    arr = (1..1_000).map { |i| Item.new(i, '01.02.2016', '04.02.2016', '10:00:00', '18:00:00', 14) }.map(&:to_hash)
-    r = Rust.calculate(arr)
+    arr = [
+      Item.new(1, '01.02.2016', '01.02.2016', '10:00:00', '18:00:00', 14),
+      Item.new(1, '02.02.2016', '10.02.2016', '10:00:00', '18:00:00', 14),
+      Item.new(1, '02.02.2016', '13.02.2016', '10:00:00', '18:00:00', 14),
+      Item.new(1, '21.02.2016', '19.03.2016', '10:00:00', '18:00:00', 14)
+    ]
+    r = Rust.calculate(arr.map(&:to_hash))
     puts r
   end
 end
