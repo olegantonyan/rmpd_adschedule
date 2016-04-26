@@ -1,5 +1,4 @@
-#[derive(Debug)]
+#[derive(Hash, Eq, PartialEq, Debug)]
 pub struct DateInterval {
-    pub begin: u32,
-    pub end: u32
+    pub day: u32,
 }

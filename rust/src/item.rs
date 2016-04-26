@@ -4,17 +4,18 @@ use std::collections::HashSet;
 use datetime;
 use date_interval::DateInterval;
 
+#[derive(Debug)]
 pub struct Item {
     pub id: u32,
     pub begin_date: u32,
     pub end_date: u32,
     pub begin_time: u32,
     pub end_time: u32,
-    pub playbacks_count: u16
+    pub playbacks_count: u32
 }
 
 impl Item {
-    pub fn new(id: u32, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: u16) -> Item {
+    pub fn new(id: u32, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: u32) -> Item {
         Item {
             id: id,
             begin_date: datetime::date_string_to_secs_since_epoch(begin_date),
@@ -31,6 +32,10 @@ impl Item {
             Item::new(d.id, &d.begin_date, &d.end_date, &d.begin_time, &d.end_time, d.playbacks_count)
         ).collect();
         res
+    }
+
+    pub fn is_appropriate_at(&self, date_seconds: u32) -> bool {
+        self.begin_date <= date_seconds && date_seconds <= self.end_date
     }
 }
 
@@ -55,30 +60,25 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
         set.insert(i.begin_date);
         set.insert(i.end_date);
     }
-    let mut vec: Vec<u32> = set.iter().cloned().collect();
-    vec.sort();
-
-    if vec.len() == 1 {
-        let mut res: Vec<DateInterval> = Vec::new();
-        res.push(DateInterval { begin: vec[0], end: vec[0] });
+    let mut res: Vec<DateInterval> = Vec::new();
+    if set.len() == 0 {
         return res;
     }
 
-    let mut res: Vec<DateInterval> = Vec::new();
-    let mut i = 0;
-    while i + 1 < vec.len() {
-        res.push(DateInterval { begin: vec[i], end: vec[i + 1] });
-        i += 1;
+    let mut i = *set.iter().min().unwrap();
+    while i <= *set.iter().max().unwrap() {
+        res.push(DateInterval { day: i });
+        i += 86400;
     }
     res
 }
 
-#[derive(RustcDecodable, RustcEncodable)]
+#[derive(Debug, RustcDecodable, RustcEncodable)]
 struct ItemRaw {
     id: u32,
     begin_date: String,
     end_date: String,
     begin_time: String,
     end_time: String,
-    playbacks_count: u16
+    playbacks_count: u32
 }
