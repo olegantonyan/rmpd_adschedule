@@ -2,6 +2,5 @@ require 'mkmf'
 
 create_makefile 'rmpd_adschedule'
 
-makefile = "all:\n  cd rust/ && cargo build --release"
-File.write('Makefile', makefile)
+File.write('Makefile', "all:\n\tcargo build --release")
 # system("cd #{File.dirname(__FILE__)} && cargo build --release")
