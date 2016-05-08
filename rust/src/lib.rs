@@ -65,7 +65,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
     }
 
     for (k, scheduled_items) in hash_intervals.iter() {
-        println!("date: {:?}", k);
+        println!("date: {:?}", k)
         for i in scheduled_items.iter() {
             println!("***** item: {:?}", i);
             for j in i.borrow().schedule_times() {
