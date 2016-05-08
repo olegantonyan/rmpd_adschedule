@@ -2,8 +2,6 @@ require 'fiddle'
 
 module RmpdAdschedule
   module Rust
-    # system("cd #{File.dirname(__FILE__)}/../../rust && cargo build --release")
-
     @lib = Fiddle.dlopen("#{File.dirname(__FILE__)}/../../rust/target/release/librmpd_adschedule.so")
     @ffi_calculate = Fiddle::Function.new(@lib['ffi_calculate'], [Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOIDP)
     @ffi_free = Fiddle::Function.new(@lib['ffi_free'], [Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOID)
