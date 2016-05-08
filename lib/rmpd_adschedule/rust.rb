@@ -2,7 +2,6 @@ require 'fiddle'
 
 module RmpdAdschedule
   module Rust
-    puts "COMPILING"
     system("cd #{File.dirname(__FILE__)}/../../rust && cargo build --release")
 
     @lib = Fiddle.dlopen("#{File.dirname(__FILE__)}/../../rust/target/release/librmpd_adschedule.so")
