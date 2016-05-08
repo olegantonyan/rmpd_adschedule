@@ -3,6 +3,8 @@ extern crate rustc_serialize;
 extern crate time;
 
 use std::collections::HashMap;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 mod item;
 mod datetime;
@@ -16,12 +18,13 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
 
     let mut hash_intervals = HashMap::new();
     for i in intervals.iter() {
-        let mut values: Vec<scheduled_item::ScheduledItem> = Vec::new();
+        let mut values: Vec<Rc<RefCell<scheduled_item::ScheduledItem>>> = Vec::new();
         for j in items.iter() {
             if j.is_appropriate_at(i.day) {
                 // associate this item with this interval
-                let si = scheduled_item::ScheduledItem { item: &j, timeshift: 0 };
-                values.push(si);
+                let si = RefCell::new(scheduled_item::ScheduledItem { item: j, timeshift: 0 });
+                let rc = Rc::new(si);
+                values.push(rc);
             }
         }
         if !values.is_empty() {
@@ -30,18 +33,46 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
     }
 
     for (_, scheduled_items) in hash_intervals.iter() {
-        let items_with_times = scheduled_item::items_with_times(&scheduled_items);
 
-        let mut i = 0;
-        while i < (items_with_times.len() - 1) {
-            let current = items_with_times[i];
-            let next = items_with_times[i + 1];
-            i += 1;
+        let mut iterations = 0;
+        while iterations < scheduled_items.len().pow(2) {
+            iterations += 1;
 
-            println!("*********");
-            println!("current {:?}", current);
-            println!("next {:?}", next);
-            println!("*********");
+            let items_with_times = scheduled_item::items_with_times(scheduled_items);
+
+            let mut i = 0;
+            while i < (items_with_times.len() - 1) {
+                let current = &items_with_times[i];
+                let next = &items_with_times[i + 1];
+                i += 1;
+
+                /*println!("*********");
+                println!("current {:?}", current);
+                println!("next {:?}", next);
+                println!("near? {:?}", scheduled_item::is_near(&current.0, &next.0));
+                println!("*********");
+*/
+                if scheduled_item::is_near(&current.0, &next.0) {
+                    scheduled_item::shift_time(&current.1, &next.1);
+                }
+            }
+
+            if !scheduled_item::overlap(&items_with_times) {
+                println!("no overlap!");
+                break;
+            }
+        }
+
+    }
+
+    for (k, scheduled_items) in hash_intervals.iter() {
+        println!("date: {:?}", k);
+        for i in scheduled_items.iter() {
+            println!("***** item: {:?}", i);
+            for j in i.borrow().schedule_times() {
+                println!("{:?}", j);
+            }
+            println!("********");
         }
     }
 

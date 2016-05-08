@@ -6,16 +6,16 @@ use date_interval::DateInterval;
 
 #[derive(Debug)]
 pub struct Item {
-    pub id: u32,
-    pub begin_date: u32,
-    pub end_date: u32,
-    pub begin_time: u32,
-    pub end_time: u32,
-    pub playbacks_count: u32
+    pub id: i32,
+    pub begin_date: i32,
+    pub end_date: i32,
+    pub begin_time: i32,
+    pub end_time: i32,
+    pub playbacks_count: i32
 }
 
 impl Item {
-    pub fn new(id: u32, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: u32) -> Item {
+    pub fn new(id: i32, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: i32) -> Item {
         Item {
             id: id,
             begin_date: datetime::date_string_to_secs_since_epoch(begin_date),
@@ -34,7 +34,7 @@ impl Item {
         res
     }
 
-    pub fn is_appropriate_at(&self, date_seconds: u32) -> bool {
+    pub fn is_appropriate_at(&self, date_seconds: i32) -> bool {
         self.begin_date <= date_seconds && date_seconds <= self.end_date
     }
 }
@@ -55,7 +55,7 @@ pub fn vec_to_json() -> String {
 }
 
 pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
-    let mut set: HashSet<u32> = HashSet::new();
+    let mut set: HashSet<i32> = HashSet::new();
     for i in items.iter() {
         set.insert(i.begin_date);
         set.insert(i.end_date);
@@ -75,10 +75,10 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
 
 #[derive(Debug, RustcDecodable, RustcEncodable)]
 struct ItemRaw {
-    id: u32,
+    id: i32,
     begin_date: String,
     end_date: String,
     begin_time: String,
     end_time: String,
-    playbacks_count: u32
+    playbacks_count: i32
 }
