@@ -34,8 +34,13 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
 
     for (_, scheduled_items) in hash_intervals.iter() {
 
+        let max_iterations = if scheduled_items.len() < 50 {
+            scheduled_items.len().pow(2)
+        }  else {
+            scheduled_items.len() * 10
+        };
         let mut iterations = 0;
-        while iterations < scheduled_items.len().pow(2) {
+        'outer: while iterations < max_iterations {
             iterations += 1;
 
             let items_with_times = scheduled_item::items_with_times(scheduled_items);
@@ -46,19 +51,13 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
                 let next = &items_with_times[i + 1];
                 i += 1;
 
-                /*println!("*********");
-                println!("current {:?}", current);
-                println!("next {:?}", next);
-                println!("near? {:?}", scheduled_item::is_near(&current.0, &next.0));
-                println!("*********");
-*/
                 if scheduled_item::is_near(&current.0, &next.0) {
                     scheduled_item::shift_time(&current.1, &next.1);
+                    continue 'outer;
                 }
             }
 
             if !scheduled_item::overlap(&items_with_times) {
-                println!("no overlap!");
                 break;
             }
         }
@@ -74,6 +73,10 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
             }
             println!("********");
         }
+
+        let items_with_times = scheduled_item::items_with_times(scheduled_items);
+        println!("overlap: {:?}",  scheduled_item::overlap(&items_with_times));
+
     }
 
     let r = item::vec_to_json();
