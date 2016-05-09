@@ -1,5 +1,5 @@
 all:
-	cargo build --release
+	cargo1 build --release
 
 clean:
 	rm -rf target
