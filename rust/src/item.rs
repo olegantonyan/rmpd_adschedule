@@ -39,21 +39,6 @@ impl Item {
     }
 }
 
-pub fn vec_to_json() -> String {
-    let mut v = Vec::new();
-    v.push(
-        ItemRaw {
-            id: 1,
-            begin_date: "12.12.1012".to_string(),
-            end_date: "12.12.1012".to_string(),
-            begin_time: "12.12.1012".to_string(),
-            end_time: "12.12.1012".to_string(),
-            playbacks_count: 2
-        }
-    );
-    json::encode(&v).unwrap()
-}
-
 pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
     let mut set: HashSet<i32> = HashSet::new();
     for i in items.iter() {
@@ -73,7 +58,7 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
     res
 }
 
-#[derive(Debug, RustcDecodable, RustcEncodable)]
+#[derive(Debug, RustcDecodable)]
 struct ItemRaw {
     id: i32,
     begin_date: String,

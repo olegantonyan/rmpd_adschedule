@@ -23,10 +23,13 @@ fn date_tm_to_secs_since_epoch(tm: time::Tm) -> i32 {
 }
 
 pub fn time_secs_since_midnight_to_string(a: &i32) -> String {
-    let h = a / 3600;
-    let rem = a % 3600;
-    let m = rem / 60;
-    let s = rem % 60;
-    let tim = time::Tm { tm_hour: h, tm_min: m, tm_sec: s, tm_nsec: 0, tm_wday: 0, tm_isdst: 0, tm_mon: 0, tm_yday: 0, tm_year: 0, tm_utcoff: 0, tm_mday: 0 };
+    let timespec = time::Timespec::new(*a as i64, 0);
+    let tim = time::at_utc(timespec);
     time::strftime("%H:%M:%S", &tim).unwrap()
+}
+
+pub fn date_secs_since_epoch_to_string(s: &i32) -> String {
+    let timespec = time::Timespec::new(*s as i64, 0);
+    let tim = time::at_utc(timespec);
+    time::strftime("%d.%m.%Y", &tim).unwrap()
 }

@@ -1,8 +1,11 @@
-use item;
-use datetime;
-
+use rustc_serialize::json;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::collections::HashMap;
+
+use item;
+use datetime;
+use date_interval;
 
 #[derive(Debug)]
 pub struct ScheduledItem<'a> {
@@ -93,4 +96,30 @@ pub fn overlap(items_with_times: &Vec<(i32, Rc<RefCell<ScheduledItem>>)>) -> boo
         }
     }
     false
+}
+
+pub fn vec_to_json(inervals: &HashMap<&date_interval::DateInterval, Vec<Rc<RefCell<ScheduledItem>>>>) -> String {
+    let mut v = Vec::new();
+    for (interval, scheduled_items) in inervals.iter() {
+        for item in scheduled_items.iter() {
+            let i = item.borrow();
+            v.push(
+                ScheduledItemRaw {
+                    id: i.item.id,
+                    begin_date: interval.to_date_string(),
+                    end_date: interval.to_date_string(),
+                    schedule: i.schedule_times()
+                }
+            );
+        }
+    }
+    json::encode(&v).unwrap()
+}
+
+#[derive(Debug, RustcEncodable)]
+struct ScheduledItemRaw {
+    id: i32,
+    begin_date: String,
+    end_date: String,
+    schedule: Vec<String>
 }

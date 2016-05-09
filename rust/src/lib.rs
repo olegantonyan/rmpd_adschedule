@@ -64,7 +64,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
 
     }
 
-    for (k, scheduled_items) in hash_intervals.iter() {
+    /*for (k, scheduled_items) in hash_intervals.iter() {
         println!("date: {:?}", k);
         for i in scheduled_items.iter() {
             println!("***** item: {:?}", i);
@@ -77,9 +77,9 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
         let items_with_times = scheduled_item::items_with_times(scheduled_items);
         println!("overlap: {:?}",  scheduled_item::overlap(&items_with_times));
 
-    }
+    }*/
 
-    let r = item::vec_to_json();
+    let r = scheduled_item::vec_to_json(&hash_intervals);
     c_ptr_from_string(&r)
 }
 
