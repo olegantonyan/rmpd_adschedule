@@ -57,27 +57,13 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
                 }
             }
 
-            if !scheduled_item::overlap(&items_with_times) {
-                break;
+            match scheduled_item::overlap(&items_with_times) {
+                None => break,
+                _ => (),
             }
         }
 
     }
-
-    /*for (k, scheduled_items) in hash_intervals.iter() {
-        println!("date: {:?}", k);
-        for i in scheduled_items.iter() {
-            println!("***** item: {:?}", i);
-            for j in i.borrow().schedule_times() {
-                println!("{:?}", j);
-            }
-            println!("********");
-        }
-
-        let items_with_times = scheduled_item::items_with_times(scheduled_items);
-        println!("overlap: {:?}",  scheduled_item::overlap(&items_with_times));
-
-    }*/
 
     let r = scheduled_item::vec_to_json(&hash_intervals);
     c_ptr_from_string(&r)

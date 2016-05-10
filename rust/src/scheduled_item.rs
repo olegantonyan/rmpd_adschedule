@@ -10,7 +10,7 @@ use date_interval;
 #[derive(Debug)]
 pub struct ScheduledItem<'a> {
     pub item: &'a item::Item,
-    pub timeshift: i32
+    pub timeshift: i32,
 }
 
 impl <'a> ScheduledItem<'a> {
@@ -84,7 +84,7 @@ pub fn shift_time(one: &Rc<RefCell<ScheduledItem>>, two: &Rc<RefCell<ScheduledIt
     }
 }
 
-pub fn overlap(items_with_times: &Vec<(i32, Rc<RefCell<ScheduledItem>>)>) -> bool {
+pub fn overlap<'a>(items_with_times: &Vec<(i32, Rc<RefCell<ScheduledItem<'a>>>)>) -> Option<(Rc<RefCell<ScheduledItem<'a>>>, Rc<RefCell<ScheduledItem<'a>>>)> {
     let mut i = 0;
     while i < (items_with_times.len() - 1) {
         let current = &items_with_times[i];
@@ -92,23 +92,31 @@ pub fn overlap(items_with_times: &Vec<(i32, Rc<RefCell<ScheduledItem>>)>) -> boo
         i += 1;
 
         if is_near(&current.0, &next.0) {
-            return true;
+            return Some((current.1.clone(), next.1.clone()));
         }
     }
-    false
+    None
 }
 
-pub fn vec_to_json(inervals: &HashMap<&date_interval::DateInterval, Vec<Rc<RefCell<ScheduledItem>>>>) -> String {
+pub fn vec_to_json<'a>(inervals: &'a HashMap<&date_interval::DateInterval, Vec<Rc<RefCell<ScheduledItem<'a>>>>>) -> String {
     let mut v = Vec::new();
     for (interval, scheduled_items) in inervals.iter() {
+
         for item in scheduled_items.iter() {
+
+            let ov: Vec<i32> = match overlap(&items_with_times(scheduled_items)) {
+                None => Vec::new(),
+                Some((f, s)) => vec![f.borrow().item.id, s.borrow().item.id],
+            };
+
             let i = item.borrow();
             v.push(
                 ScheduledItemRaw {
                     id: i.item.id,
                     begin_date: interval.to_date_string(),
                     end_date: interval.to_date_string(),
-                    schedule: i.schedule_times()
+                    schedule: i.schedule_times(),
+                    overlap: ov,
                 }
             );
         }
@@ -121,5 +129,6 @@ struct ScheduledItemRaw {
     id: i32,
     begin_date: String,
     end_date: String,
-    schedule: Vec<String>
+    schedule: Vec<String>,
+    overlap: Vec<i32>,
 }
