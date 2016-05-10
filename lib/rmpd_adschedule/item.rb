@@ -25,8 +25,7 @@ module RmpdAdschedule
         end_date: end_date,
         begin_time: begin_time,
         end_time: end_time,
-        playbacks_count: playbacks_count
-      }
+        playbacks_count: playbacks_count }
     end
   end
 end
