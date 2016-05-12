@@ -70,9 +70,11 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
             res.push(DateInterval { begin: prev, end: *i });
             break;
         }
-        res.push(DateInterval { begin: prev, end: (*i - 86400) });
+        if (*i - 86400) != prev {
+            res.push(DateInterval { begin: prev, end: (*i - 86400) });
+        }
         res.push(DateInterval { begin: *i, end: *i });
-        prev = *i;
+        prev = *i + 86400;
     }
     res
 }
