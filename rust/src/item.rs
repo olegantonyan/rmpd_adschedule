@@ -34,8 +34,8 @@ impl Item {
         res
     }
 
-    pub fn is_appropriate_at(&self, date_seconds: i32) -> bool {
-        self.begin_date <= date_seconds && date_seconds <= self.end_date
+    pub fn is_appropriate_at(&self, date_interval: &DateInterval) -> bool {
+        self.begin_date <= date_interval.begin && date_interval.end <= self.end_date
     }
 }
 
@@ -50,10 +50,29 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
         return res;
     }
 
-    let mut i = *set.iter().min().unwrap();
-    while i <= *set.iter().max().unwrap() {
-        res.push(DateInterval { day: i });
-        i += 86400;
+    let min = *set.iter().min().unwrap();
+    let max = *set.iter().max().unwrap();
+    if set.len() == 2 {
+        res.push(DateInterval { begin: min.clone(), end: max.clone() });
+        return res;
+    }
+
+    let mut arry: Vec<i32> = Vec::new();
+    arry.extend(set.into_iter());
+    arry.sort();
+
+    let mut prev = min;
+    for i in arry.iter() {
+        if *i == min {
+            continue;
+        }
+        if *i == max {
+            res.push(DateInterval { begin: prev, end: *i });
+            break;
+        }
+        res.push(DateInterval { begin: prev, end: (*i - 86400) });
+        res.push(DateInterval { begin: *i, end: *i });
+        prev = *i;
     }
     res
 }

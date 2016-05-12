@@ -113,8 +113,8 @@ pub fn vec_to_json<'a>(inervals: &'a HashMap<&date_interval::DateInterval, Vec<R
             v.push(
                 ScheduledItemRaw {
                     id: i.item.id,
-                    begin_date: interval.to_date_string(),
-                    end_date: interval.to_date_string(),
+                    begin_date: date_interval::DateInterval::to_date_string(interval.begin),
+                    end_date: date_interval::DateInterval::to_date_string(interval.end),
                     schedule: i.schedule_times(),
                     overlap: ov,
                 }

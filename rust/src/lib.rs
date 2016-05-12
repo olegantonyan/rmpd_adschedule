@@ -20,7 +20,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
     for i in intervals.iter() {
         let mut values: Vec<Rc<RefCell<scheduled_item::ScheduledItem>>> = Vec::new();
         for j in items.iter() {
-            if j.is_appropriate_at(i.day) {
+            if j.is_appropriate_at(i) {
                 // associate this item with this interval
                 let si = RefCell::new(scheduled_item::ScheduledItem { item: j, timeshift: 0 });
                 let rc = Rc::new(si);
