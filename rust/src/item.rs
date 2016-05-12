@@ -61,20 +61,26 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
     arry.extend(set.into_iter());
     arry.sort();
 
+/*    println!("********");
+    println!("{:?}", arry.iter().map(|i| DateInterval::to_date_string(*i)).collect::<Vec<String>>());
+    println!("********");*/
+
     let mut prev = min;
     for i in arry.iter() {
-        if *i == min {
+        if *i == prev {
             continue;
         }
         if *i == max {
             res.push(DateInterval { begin: prev, end: *i });
             break;
         }
+        res.push(DateInterval { begin: prev, end: (*i - 86400) });
         if (*i - 86400) != prev {
-            res.push(DateInterval { begin: prev, end: (*i - 86400) });
+            res.push(DateInterval { begin: *i, end: *i });
+            prev = *i + 86400;
+        } else {
+            prev = *i;
         }
-        res.push(DateInterval { begin: *i, end: *i });
-        prev = *i + 86400;
     }
     res
 }
