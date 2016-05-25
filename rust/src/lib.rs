@@ -33,12 +33,8 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
     }
 
     for (_, scheduled_items) in hash_intervals.iter() {
+        let max_iterations = scheduled_items.len() * 50;
 
-        let max_iterations = if scheduled_items.len() < 50 {
-            scheduled_items.len().pow(2)
-        }  else {
-            scheduled_items.len() * 10
-        };
         let mut iterations = 0;
         'outer: while iterations < max_iterations {
             iterations += 1;
