@@ -90,7 +90,7 @@ pub fn schedule<'a>(item_index: usize, scheduled_items: &'a Vec<Rc<RefCell<Sched
         if overlap(&items_with_times).is_none() && schedule(item_index + 1, scheduled_items) {
             return true;
         }
-        if !scheduled_items[item_index].borrow_mut().shift_time(60) {
+        if !scheduled_items[item_index].borrow_mut().shift_time(10) {
             break;
         }
     }

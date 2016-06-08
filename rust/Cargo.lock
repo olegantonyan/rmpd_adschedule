@@ -1,6 +1,6 @@
 [root]
 name = "rmpd_adschedule"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
