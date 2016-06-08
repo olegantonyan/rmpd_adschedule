@@ -1,6 +1,6 @@
 [package]
 name = "rmpd_adschedule"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Oleg Antonyan <oleg.b.antonyan@gmail.com>"]
 
 [dependencies]

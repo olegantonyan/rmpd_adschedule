@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use datetime;
 use date_interval::DateInterval;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, PartialOrd)]
 pub struct Item {
     pub id: i32,
     pub begin_date: i32,
@@ -52,7 +52,7 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
 
     let min = *set.iter().min().unwrap();
     let max = *set.iter().max().unwrap();
-    if set.len() == 2 {
+    if set.len() == 2 || set.len() == 1 {
         res.push(DateInterval { begin: min.clone(), end: max.clone() });
         return res;
     }
