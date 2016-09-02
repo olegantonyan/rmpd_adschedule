@@ -23,7 +23,7 @@ impl <'a> ScheduledItem<'a> {
 
     pub fn calculate_schedule_seconds(&self) -> Vec<i32> {
         let mut v: Vec<i32> = Vec::new();
-        if self.item.playbacks_count != 0 {
+        if self.item.playbacks_count > 0 {
             for i in 0..self.item.playbacks_count {
                 let value = self.item.begin_time + self.timeshift + i * self.period_seconds();
                 v.push(value);
