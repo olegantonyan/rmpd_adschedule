@@ -1,3 +1,5 @@
+require 'time'
+
 require 'rmpd_adschedule/version'
 require 'rmpd_adschedule/item'
 require 'rmpd_adschedule/scheduled_item'
