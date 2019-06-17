@@ -82,11 +82,13 @@ impl <'a> ScheduledItem<'a> {
 }
 
 pub fn schedule(item_index: usize, scheduled_items: Vec<ScheduledItem>) -> Vec<ScheduledItem> {
+    if item_index >= scheduled_items.len() {
+        return scheduled_items;
+    }
+
     scheduled_items
 
-    /*if item_index >= scheduled_items.len() {
-        return true;
-    }
+    /*
     loop {
         let items_with_times = items_with_times(scheduled_items, item_index);
         if overlap(&items_with_times).is_none() && schedule(item_index + 1, scheduled_items) {
