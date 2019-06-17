@@ -81,8 +81,10 @@ impl <'a> ScheduledItem<'a> {
     }
 }
 
-pub fn schedule<'a>(item_index: usize, scheduled_items: &'a Vec<Rc<RefCell<ScheduledItem<'a>>>>) -> bool {
-    if item_index >= scheduled_items.len() {
+pub fn schedule(item_index: usize, scheduled_items: Vec<ScheduledItem>) -> Vec<ScheduledItem> {
+    scheduled_items
+
+    /*if item_index >= scheduled_items.len() {
         return true;
     }
     loop {
@@ -95,7 +97,7 @@ pub fn schedule<'a>(item_index: usize, scheduled_items: &'a Vec<Rc<RefCell<Sched
         }
     }
     //scheduled_items[item_index].borrow_mut().reset_shift();
-    false
+    false*/
 }
 
 pub fn items_with_times<'a>(items: &'a Vec<Rc<RefCell<ScheduledItem<'a>>>>, upto_index: usize) -> Vec<(i32, Rc<RefCell<ScheduledItem<'a>>>)> {
@@ -132,24 +134,23 @@ pub fn overlap<'a>(items_with_times: &Vec<(i32, Rc<RefCell<ScheduledItem<'a>>>)>
     None
 }
 
-pub fn vec_to_json<'a>(inervals: &'a HashMap<&date_interval::DateInterval, Vec<Rc<RefCell<ScheduledItem<'a>>>>>) -> String {
+pub fn vec_to_json(inervals: HashMap<&date_interval::DateInterval, Vec<ScheduledItem>>) -> String {
     let mut v = Vec::new();
     for (interval, scheduled_items) in inervals.iter() {
 
         for item in scheduled_items.iter() {
 
-            let ov: Vec<i32> = match overlap(&items_with_times(scheduled_items, scheduled_items.len())) {
+            let ov: Vec<i32> = Vec::new(); /*match overlap(&items_with_times(scheduled_items, scheduled_items.len())) {
                 None => Vec::new(),
                 Some((f, s)) => vec![f.borrow().item.id, s.borrow().item.id],
-            };
+            };*/
 
-            let i = item.borrow();
             v.push(
                 ScheduledItemRaw {
-                    id: i.item.id,
+                    id: item.item.id,
                     begin_date: date_interval::DateInterval::to_date_string(interval.begin),
                     end_date: date_interval::DateInterval::to_date_string(interval.end),
-                    schedule: i.schedule_times(),
+                    schedule: item.schedule_times(),
                     overlap: ov,
                 }
             );

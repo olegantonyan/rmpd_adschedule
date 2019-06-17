@@ -3,8 +3,6 @@ extern crate rustc_serialize;
 extern crate time;
 
 use std::collections::HashMap;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 mod item;
 mod datetime;
@@ -18,27 +16,21 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
 
     let mut hash_intervals = HashMap::new();
     for i in intervals.iter() {
-        let mut values: Vec<Rc<RefCell<scheduled_item::ScheduledItem>>> = Vec::new();
+        let mut values: Vec<scheduled_item::ScheduledItem> = Vec::new();
+
         for j in items.iter() {
-            if j.is_appropriate_at(i) {
-                // associate this item with this interval
-                let si = RefCell::new(scheduled_item::ScheduledItem::new(j));
-                let rc = Rc::new(si);
-                values.push(rc);
+            if j.is_appropriate_at(i) { // associate this item with this interval
+                values.push(scheduled_item::ScheduledItem::new(j));
             }
         }
-        if !values.is_empty() {
-            values.sort_by( |a, b| a.borrow().density().partial_cmp(&b.borrow().density()).unwrap() );
+        if !values.is_empty() { // start scheduling from the most dense element
+            values.sort_by( |a, b| a.density().partial_cmp(&b.density()).unwrap() );
             values.reverse();
-            hash_intervals.insert(i, values);
+            hash_intervals.insert(i, scheduled_item::schedule(0, values));
         }
     }
 
-    for (_, scheduled_items) in hash_intervals.iter() {
-        scheduled_item::schedule(0, scheduled_items);
-    }
-
-    let r = scheduled_item::vec_to_json(&hash_intervals);
+    let r = scheduled_item::vec_to_json(hash_intervals);
     c_ptr_from_string(&r)
 }
 
