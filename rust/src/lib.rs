@@ -20,7 +20,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
 
         for j in items.iter() {
             if j.is_appropriate_at(i) { // associate this item with this interval
-                values.push(scheduled_item::ScheduledItem::new(j));
+                values.push(scheduled_item::ScheduledItem::new(*j, 0));
             }
         }
         if !values.is_empty() { // start scheduling from the most dense element

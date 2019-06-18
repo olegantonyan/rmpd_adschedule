@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use datetime;
 use date_interval::DateInterval;
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
 pub struct Item {
     pub id: i32,
     pub begin_date: i32,
