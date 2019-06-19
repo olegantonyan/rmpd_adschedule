@@ -6,7 +6,7 @@ use date_interval::DateInterval;
 
 #[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
 pub struct Item {
-    pub id: i32,
+    pub id: i64,
     pub begin_date: i32,
     pub end_date: i32,
     pub begin_time: i32,
@@ -15,7 +15,7 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn new(id: i32, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: i32) -> Item {
+    pub fn new(id: i64, begin_date: &str, end_date: &str, begin_time: &str, end_time: &str, playbacks_count: i32) -> Item {
         Item {
             id: id,
             begin_date: datetime::date_string_to_secs_since_epoch(begin_date),
@@ -87,7 +87,7 @@ pub fn date_intervals_sorted(items: &Vec<Item>) -> Vec<DateInterval> {
 
 #[derive(Debug, RustcDecodable)]
 struct ItemRaw {
-    id: i32,
+    id: i64,
     begin_date: String,
     end_date: String,
     begin_time: String,

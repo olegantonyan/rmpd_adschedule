@@ -121,7 +121,7 @@ module RmpdAdschedule
       ['09:00', '23:00', 4]
     ].map.with_index(1) { |i, idx| make_item.call(idx, *i) } # не удаётся раскидать, через несколько минут прибил процесс т.к. надоело ждать :)
 
-    #arr = bar#supermarket
+    #arr = supermarket
 
     r = Rust.calculate(arr.map(&:to_hash))
 

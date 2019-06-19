@@ -1,6 +1,7 @@
 extern crate libc;
 extern crate rustc_serialize;
 extern crate time;
+extern crate itertools;
 
 use std::collections::HashMap;
 

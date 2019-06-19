@@ -1,5 +1,6 @@
 use rustc_serialize::json;
 use std::collections::HashMap;
+use itertools::Itertools;
 
 use item;
 use datetime;
@@ -65,8 +66,8 @@ pub fn schedule(item_index: usize, scheduled_items: Vec<ScheduledItem>) -> Vec<S
     let mut items_copy = scheduled_items;
 
     loop {
-        let ids_with_times = items_ids_with_times(&items_copy, item_index);
-        if overlap(&ids_with_times).is_none() {
+        let axis = Axis::new(&items_copy, item_index);
+        if axis.rms_distance() > 0.0 {
             return schedule(item_index + 1, items_copy.clone());
         }
 
@@ -89,46 +90,13 @@ pub fn schedule(item_index: usize, scheduled_items: Vec<ScheduledItem>) -> Vec<S
     items_copy
 }
 
-pub fn items_ids_with_times(items: &Vec<ScheduledItem>, upto_index: usize) -> Vec<(i32, i32)> {
-    let mut res: Vec<(i32, i32)> = Vec::new();
-    for (index, i) in items.iter().enumerate() {
-        for j in i.schedule_seconds() {
-            res.push((j, i.item.id));
-        }
-        if index == upto_index {
-            break;
-        }
-    }
-    res.sort_by(|a, b| a.0.cmp(&b.0));
-    res
-}
-
-pub fn is_near(one: i32, two: i32) -> bool {
-    let delta = 60; // seconds
-    (one - two).abs() < delta
-}
-
-pub fn overlap(items_ids_with_times: &Vec<(i32, i32)>) -> Option<(i32, i32)> {
-    let mut i = 0;
-    while i < (items_ids_with_times.len() - 1) {
-        let current = &items_ids_with_times[i];
-        let next = &items_ids_with_times[i + 1];
-        i += 1;
-
-        if is_near(current.0, next.0) {
-            return Some((current.1, next.1));
-        }
-    }
-    None
-}
-
 pub fn vec_to_json(inervals: HashMap<&date_interval::DateInterval, Vec<ScheduledItem>>) -> String {
     let mut v = Vec::new();
     for (interval, scheduled_items) in inervals.iter() {
 
         for item in scheduled_items.iter() {
 
-            let ov: Vec<i32> = match overlap(&items_ids_with_times(scheduled_items, scheduled_items.len())) {
+            let ov: Vec<i64> = match overlap(&Axis::new(scheduled_items, scheduled_items.len())) {
                 None => Vec::new(),
                 Some((f, s)) => vec![f, s],
             };
@@ -147,11 +115,63 @@ pub fn vec_to_json(inervals: HashMap<&date_interval::DateInterval, Vec<Scheduled
     json::encode(&v).unwrap()
 }
 
+fn overlap(axis: &Axis) -> Option<(i64, i64)> {
+    let delta = 60; // seconds
+
+    for (a, b) in axis.points.iter().tuple_windows() {
+        if (a.seconds - b.seconds).abs() < delta {
+            return Some((a.item_id, b.item_id));
+        }
+    }
+    None
+}
+
 #[derive(Debug, RustcEncodable)]
 struct ScheduledItemRaw {
-    id: i32,
+    id: i64,
     begin_date: String,
     end_date: String,
     schedule: Vec<String>,
-    overlap: Vec<i32>,
+    overlap: Vec<i64>,
+}
+
+#[derive(Debug, Copy, Clone)]
+struct Point {
+    pub item_id: i64,
+    pub seconds: i32
+}
+
+#[derive(Debug)]
+struct Axis {
+    pub points: Vec<Point>
+}
+
+impl Axis {
+    pub fn new(items: &Vec<ScheduledItem>, upto_index: usize) -> Axis {
+        let mut res = Axis { points: Vec::new() };
+        for (index, i) in items.iter().enumerate() {
+            for j in i.schedule_seconds() {
+                res.points.push(Point { item_id: i.item.id, seconds: j });
+            }
+            if index == upto_index {
+                break;
+            }
+        }
+        res.points.sort_by(|a, b| a.seconds.cmp(&b.seconds));
+        res
+    }
+
+    pub fn rms_distance(&self) -> f64 {
+        let delta_overlap = 60; // seconds
+
+        let mut sum = 0;
+        for (a, b) in self.points.iter().tuple_windows() {
+            let distance = a.seconds - b.seconds;
+            if distance.abs() < delta_overlap {
+                return 0.0;
+            }
+            sum += distance.pow(2);
+        }
+        (sum as f64).sqrt()
+    }
 }
