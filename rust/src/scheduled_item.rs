@@ -67,7 +67,8 @@ pub fn schedule(item_index: usize, scheduled_items: Vec<ScheduledItem>) -> Vec<S
 
     loop {
         let axis = Axis::new(&items_copy, item_index);
-        if axis.rms_distance() > 0.0 {
+        let distance = axis.rms_distance();
+        if distance > 0.0 {
             return schedule(item_index + 1, items_copy.clone());
         }
 
@@ -122,13 +123,13 @@ struct ScheduledItemRaw {
 }
 
 #[derive(Debug, Copy, Clone)]
-struct Point {
+pub struct Point {
     pub item_id: i64,
     pub seconds: i32
 }
 
 #[derive(Debug)]
-struct Axis {
+pub struct Axis {
     pub points: Vec<Point>
 }
 
@@ -152,7 +153,7 @@ impl Axis {
 
         let mut sum = 0;
         for (a, b) in self.points.iter().tuple_windows() {
-            let distance = a.seconds - b.seconds;
+            let distance = b.seconds - a.seconds;
             if distance.abs() < delta_overlap {
                 return -1.0;
             }

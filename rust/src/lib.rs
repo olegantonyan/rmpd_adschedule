@@ -27,7 +27,42 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
         if !values.is_empty() { // start scheduling from the most dense element
             values.sort_by( |a, b| a.density().partial_cmp(&b.density()).unwrap() );
             values.reverse();
-            hash_intervals.insert(i, scheduled_item::schedule(0, values));
+
+
+            let mut last_schedule = scheduled_item::schedule(0, values);;
+            let mut last_distance = 0.0;
+            let mut break_point = false;
+            loop {
+                let mut new_values = Vec::new();
+                for i in last_schedule.iter() {
+                    let new_shift = if i.timeshift == 0 {
+                        0
+                    } else {
+                        let shift_value = 60;
+                        if i.allow_shift(shift_value) {
+                            i.timeshift + shift_value
+                        } else {
+                            break_point = true;
+                            0
+                        }
+                    };
+                    new_values.push(scheduled_item::ScheduledItem::new(i.item, new_shift))
+                }
+                let current_schedule = scheduled_item::schedule(0, new_values.clone());
+                let current_distance = scheduled_item::Axis::new(&current_schedule, current_schedule.len()).rms_distance();
+
+                println!("last: {:?} current: {:?}",last_distance, current_distance);
+
+                if break_point || ((current_distance > last_distance) && last_distance > 0.0) || (current_distance < 0.0 && last_distance < 0.0) {
+                    hash_intervals.insert(i, last_schedule);
+                    break;
+                } else {
+                    last_distance = current_distance;
+                    last_schedule = new_values;
+                }
+            }
+
+
         }
     }
 
