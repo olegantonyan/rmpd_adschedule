@@ -96,10 +96,7 @@ pub fn vec_to_json(inervals: HashMap<&date_interval::DateInterval, Vec<Scheduled
 
         for item in scheduled_items.iter() {
 
-            let ov: Vec<i64> = match overlap(&Axis::new(scheduled_items, scheduled_items.len())) {
-                None => Vec::new(),
-                Some((f, s)) => vec![f, s],
-            };
+            let distance = Axis::new(scheduled_items, scheduled_items.len()).rms_distance();
 
             v.push(
                 ScheduledItemRaw {
@@ -107,23 +104,12 @@ pub fn vec_to_json(inervals: HashMap<&date_interval::DateInterval, Vec<Scheduled
                     begin_date: date_interval::DateInterval::to_date_string(interval.begin),
                     end_date: date_interval::DateInterval::to_date_string(interval.end),
                     schedule: item.schedule_times(),
-                    overlap: ov,
+                    distance: distance,
                 }
             );
         }
     }
     json::encode(&v).unwrap()
-}
-
-fn overlap(axis: &Axis) -> Option<(i64, i64)> {
-    let delta = 60; // seconds
-
-    for (a, b) in axis.points.iter().tuple_windows() {
-        if (a.seconds - b.seconds).abs() < delta {
-            return Some((a.item_id, b.item_id));
-        }
-    }
-    None
 }
 
 #[derive(Debug, RustcEncodable)]
@@ -132,7 +118,7 @@ struct ScheduledItemRaw {
     begin_date: String,
     end_date: String,
     schedule: Vec<String>,
-    overlap: Vec<i64>,
+    distance: f64,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -168,7 +154,7 @@ impl Axis {
         for (a, b) in self.points.iter().tuple_windows() {
             let distance = a.seconds - b.seconds;
             if distance.abs() < delta_overlap {
-                return 0.0;
+                return -1.0;
             }
             sum += distance.pow(2);
         }

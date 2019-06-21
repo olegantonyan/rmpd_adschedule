@@ -2,26 +2,32 @@ require 'json'
 
 module RmpdAdschedule
   class ScheduledItem
-    attr_accessor :id, :begin_date, :end_date, :schedule, :overlap
+    class << self
+      def from_hash(h)
+        new(h['id'], h['begin_date'], h['end_date'], h['schedule'], h['distance'])
+      end
 
-    def initialize(id, begin_date, end_date, schedule, overlap)
-      self.id = id
-      self.begin_date = begin_date
-      self.end_date = end_date
-      self.schedule = schedule
-      self.overlap = overlap
+      def array_from_hashes(arr)
+        arr.map { |i| from_hash(i) }
+      end
+    end
+
+    attr_reader :id, :begin_date, :end_date, :schedule, :distance
+
+    def initialize(id, begin_date, end_date, schedule, distance)
+      @id = id
+      @begin_date = begin_date
+      @end_date = end_date
+      @schedule = schedule
+      @distance = distance
+    end
+
+    def possible?
+      distance > 0
     end
 
     def to_s
-      "#ScheduledItem {id: #{id}, begin_date: #{begin_date}, end_date: #{end_date}, schedule: #{schedule}, overlap: #{overlap}}"
-    end
-
-    def self.from_hash(h)
-      new(h['id'], h['begin_date'], h['end_date'], h['schedule'], h['overlap'])
-    end
-
-    def self.array_from_hashes(arr)
-      arr.map { |i| from_hash(i) }
+      "#ScheduledItem {id: #{id}, begin_date: #{begin_date}, end_date: #{end_date}, schedule: #{schedule}, distance: #{distance}}"
     end
   end
 end

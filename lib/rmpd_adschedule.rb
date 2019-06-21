@@ -6,12 +6,14 @@ require 'rmpd_adschedule/scheduled_item'
 require 'rmpd_adschedule/rust'
 
 module RmpdAdschedule
-  def self.calculate(items)
+  module_function
+
+  def calculate(items)
     result = Rust.calculate(items.map(&:to_hash))
     ScheduledItem.array_from_hashes(result)
   end
 
-  def self.say_hello
+  def say_hello
     arr = [
       #Item.new(1, '25.05.2016', '25.06.2016', '09:00:00', '09:20:00', 4),
       #Item.new(2, '25.05.2016', '25.06.2016', '09:00:00', '09:20:00', 2)
