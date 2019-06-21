@@ -130,16 +130,26 @@ pub struct Point {
 
 #[derive(Debug)]
 pub struct Axis {
-    pub points: Vec<Point>
+    pub points: Vec<Point>,
+    pub end_time: i32,
+    pub begin_time : i32
 }
 
 impl Axis {
     pub fn new(items: &Vec<ScheduledItem>, upto_index: usize) -> Axis {
-        let mut res = Axis { points: Vec::new() };
+        let mut res = Axis { points: Vec::new(), end_time: 0, begin_time: 0 };
+
         for (index, i) in items.iter().enumerate() {
             for j in i.schedule_seconds() {
                 res.points.push(Point { item_id: i.item.id, seconds: j });
             }
+            if i.item.end_time > res.end_time {
+                res.end_time = i.item.end_time;
+            }
+            if i.item.begin_time > res.begin_time {
+                res.begin_time = i.item.begin_time;
+            }
+
             if index == upto_index {
                 break;
             }
@@ -159,6 +169,8 @@ impl Axis {
             }
             sum += distance.pow(2);
         }
+        sum += (self.points.first().unwrap().seconds - self.begin_time).pow(2);
+        sum += (self.points.last().unwrap().seconds - self.end_time).pow(2);
         (sum as f64).sqrt()
     }
 }
