@@ -51,7 +51,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
                 let current_schedule = scheduled_item::schedule(0, new_values.clone());
                 let current_distance = scheduled_item::Axis::new(&current_schedule, current_schedule.len()).rms_distance();
 
-                println!("last: {:?} current: {:?}",last_distance, current_distance);
+                //println!("last: {:?} current: {:?}",last_distance, current_distance);
 
                 if break_point || ((current_distance > last_distance) && last_distance > 0.0) || (current_distance < 0.0 && last_distance < 0.0) {
                     hash_intervals.insert(i, last_schedule);

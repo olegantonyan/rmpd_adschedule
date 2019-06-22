@@ -4,7 +4,7 @@ module RmpdAdschedule
   class ScheduledItem
     class << self
       def from_hash(h)
-        new(h['id'], h['begin_date'], h['end_date'], h['schedule'], h['distance'])
+        new(h['id'], h['begin_date'], h['end_date'], h['schedule'], h['overlap'])
       end
 
       def array_from_hashes(arr)
@@ -12,14 +12,14 @@ module RmpdAdschedule
       end
     end
 
-    attr_reader :id, :begin_date, :end_date, :schedule, :distance
+    attr_reader :id, :begin_date, :end_date, :schedule, :overlap
 
-    def initialize(id, begin_date, end_date, schedule, distance)
+    def initialize(id, begin_date, end_date, schedule, overlap)
       @id = id
       @begin_date = begin_date
       @end_date = end_date
       @schedule = schedule
-      @distance = distance
+      @overlap = overlap
     end
 
     def possible?
@@ -27,7 +27,7 @@ module RmpdAdschedule
     end
 
     def to_s
-      "#ScheduledItem {id: #{id}, begin_date: #{begin_date}, end_date: #{end_date}, schedule: #{schedule}, distance: #{distance}}"
+      "#ScheduledItem {id: #{id}, begin_date: #{begin_date}, end_date: #{end_date}, schedule: #{schedule}, overlap: #{overlap}}"
     end
   end
 end
