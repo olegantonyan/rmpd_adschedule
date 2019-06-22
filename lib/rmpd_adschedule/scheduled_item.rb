@@ -22,10 +22,6 @@ module RmpdAdschedule
       @overlap = overlap
     end
 
-    def possible?
-      distance > 0
-    end
-
     def to_s
       "#ScheduledItem {id: #{id}, begin_date: #{begin_date}, end_date: #{end_date}, schedule: #{schedule}, overlap: #{overlap}}"
     end
