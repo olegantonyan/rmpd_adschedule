@@ -53,7 +53,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
 
                 //println!("last: {:?} current: {:?}",last_distance, current_distance);
 
-                if break_point || ((current_distance > last_distance) && last_distance > 0.0) || (current_distance < 0.0 && last_distance < 0.0) {
+                if new_values.len() == 1 || break_point || ((current_distance > last_distance) && last_distance > 0.0) || (current_distance < 0.0 && last_distance < 0.0) {
                     hash_intervals.insert(i, last_schedule);
                     break;
                 } else {
