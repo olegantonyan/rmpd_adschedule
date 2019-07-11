@@ -32,6 +32,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
             let mut last_schedule = scheduled_item::schedule(0, values);;
             let mut last_distance = 0.0;
             let mut break_point = false;
+            let mut deadband_counter = 0;
             loop {
                 let mut new_values = Vec::new();
                 for i in last_schedule.iter() {
@@ -57,6 +58,13 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
                     hash_intervals.insert(i, last_schedule);
                     break;
                 } else {
+                    if current_distance == last_distance {
+                        deadband_counter += 1;
+                        if deadband_counter > 1000 {
+                            break_point = true;
+                        }
+                    }
+
                     last_distance = current_distance;
                     last_schedule = new_values;
                 }
