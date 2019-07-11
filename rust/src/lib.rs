@@ -60,7 +60,7 @@ pub extern "C" fn ffi_calculate(c_ptr: *const libc::c_char) -> *const libc::c_ch
                 } else {
                     if current_distance == last_distance {
                         deadband_counter += 1;
-                        if deadband_counter > 1000 {
+                        if deadband_counter > 100000 {
                             break_point = true;
                         }
                     }
